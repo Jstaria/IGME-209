@@ -1,4 +1,0 @@
-﻿  Example_OOP.cpp
-D:\Profiles\jws8554\Downloads\Example_OOP.cpp(101,27): warning C4018: '<': signed/unsigned mismatch
-D:\Profiles\jws8554\Downloads\Example_OOP.cpp(102,46): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-  ExampleOO.vcxproj -> D:\Profiles\jws8554\source\repos\IGME-209\SFML\Debug\ExampleOO.exe

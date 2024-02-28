@@ -1,1 +1,9 @@
-﻿  A02-Joseph-Staria.vcxproj -> Z:\IGMProfile\Desktop\C++\SFML\Debug\A02-Joseph-Staria.exe
+﻿  main.cpp
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(40,42): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(40,26): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(92,79): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(92,59): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(99,25): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(101,103): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(101,59): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
+LINK : fatal error LNK1104: cannot open file 'sfml-graphics-d.lib'
