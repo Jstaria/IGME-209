@@ -1,37 +1,12 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "K:\\Repos\\IGME-209\\SFML\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{F4350748-63E2-4F5C-A919-394292F29F02}|SMFL1\\SMFL1.vcxproj|K:\\Repos\\IGME-209\\SFML\\SMFL1\\Example_OOP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{F4350748-63E2-4F5C-A919-394292F29F02}|SMFL1\\SMFL1.vcxproj|solutionrelative:SMFL1\\Example_OOP.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    }
-  ],
+  "WorkspaceRootPath": "C:\\Users\\Joseph Staria\\Documents\\GitHub\\IGME-209\\SFML\\",
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": [
-        {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 0,
-          "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Example_OOP.cpp",
-              "DocumentMoniker": "K:\\Repos\\IGME-209\\SFML\\SMFL1\\Example_OOP.cpp",
-              "RelativeDocumentMoniker": "SMFL1\\Example_OOP.cpp",
-              "ToolTip": "K:\\Repos\\IGME-209\\SFML\\SMFL1\\Example_OOP.cpp",
-              "RelativeToolTip": "SMFL1\\Example_OOP.cpp",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAABIAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-02-28T02:47:18.281Z",
-              "EditorCaption": ""
-            }
-          ]
-        }
-      ]
+      "DocumentGroups": []
     }
   ]
 }
