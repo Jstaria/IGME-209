@@ -1,9 +1,9 @@
-﻿  main.cpp
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(40,42): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(40,26): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(92,79): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(92,59): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(99,25): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(101,103): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-K:\Repos\IGME-209\SFML\A02-Joseph-Staria\main.cpp(101,59): warning C4244: 'argument': conversion from 'size_t' to 'float', possible loss of data
-LINK : fatal error LNK1104: cannot open file 'sfml-graphics-d.lib'
+﻿  MyController.cpp
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\Tank.h(93,29): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\Tank.h(94,32): warning C4244: 'return': conversion from 'int' to 'float', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\InformationYouCanGet.h(66,79): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\InformationYouCanGet.h(69,88): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\InformationYouCanGet.h(72,82): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\InformationYouCanGet.h(75,91): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+D:\Profiles\jws8554\source\repos\IGME-209\SFML\A02-Joseph-Staria\MyController.cpp(91,26): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  A02-Joseph-Staria.vcxproj -> D:\Profiles\jws8554\source\repos\IGME-209\SFML\Debug\A02-Joseph-Staria.exe

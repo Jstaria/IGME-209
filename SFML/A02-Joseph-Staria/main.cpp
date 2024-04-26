@@ -1,210 +1,227 @@
-#include <SFML/Graphics.hpp>
 #include <iostream>
+#include <SFML/Graphics.hpp>
+#include "Tank.h"     
+#include "TankMap.h"  
+#include "TankController.h"
+#include "PlayerController.h"
+#include "AIController.h"
+#include "MyController.h"
+#include "ViewManager.h"
+#include "UpgradeItem.h"
+#include "InformationYouCanGet.h"
+#include <fstream>
 
-using namespace sf;
 using namespace std;
 
-const int ROWS = 20;
-const int COLS = 20;
-const int BLOCK_SIZE = 50; // Size of each block in pixels
-char maze[ROWS][COLS] = {
-	// Maze initialization remains the same
-	{'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-	{'#', 'P', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-	{'#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', '#', '#', '#', '#', '#', ' ', '#', ' ', '#'},
-	{'#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', '#'},
-	{'#', ' ', '#', '#', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', ' ', '#', ' ', '#', ' ', '#'},
-	{'#', ' ', ' ', ' ', '#', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', '#', ' ', '#', 'X', '#'},
-	{'#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', ' ', '#', ' ', '#'},
-	{'#', ' ', '#', 'X', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', '#', ' ', '#'},
-	{'#', ' ', '#', '#', '#', ' ', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', ' ', ' ', '#'},
-	{'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#', ' ', '#', '#'},
-	{'#', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#', '#', ' ', '#', ' ', '#', ' ', ' ', '#'},
-	{'#', ' ', ' ', ' ', ' ', '#', ' ', '#', ' ', ' ', ' ', '#', ' ', ' ', '#', ' ', '#', ' ', '#', '#'},
-	{'#', ' ', '#', '#', ' ', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', '#', ' ', '#', ' ', '#', '#'},
-	{'#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-	{'#', '#', ' ', '#', ' ', '#', '#', '#', ' ', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#'},
-	{'#', ' ', ' ', 'X', ' ', '#', ' ', ' ', 'X', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#'},
-	{'#', ' ', '#', '#', '#', '#', ' ', '#', '#', '#', '#', '#', '#', '#', ' ', '#', '#', '#', ' ', '#'},
-	{'#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', '#'},
-	{'#', 'E', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'},
-	{'#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#'}
-};
+ViewManager* g_viewManager; // view managere
 
-int playerX = 1;
-int playerY = 1;
-bool isGameOver = false;
+TankMap* g_map_ptr;     // map pointer
 
-void drawRect(Color color, sf::RenderWindow& window, RectangleShape rectangle, int i, int j) {
-	rectangle.setFillColor(color); // Set the rectangle's color
-	rectangle.setPosition(j * BLOCK_SIZE, i * BLOCK_SIZE); // Set the position of the rectangle
-	window.draw(rectangle); // Draw the rectangle
+vector<Tank*> g_tank_array;
+
+// deltaTime
+Time g_preTime;         // the ElapsedTime of last frame
+Clock g_deltaClock;     // the clock used to get the ElapsedTime
+
+BulletManager* g_bullet_manager; // manage all bullets
+UpgradeItemManager* g_item_manager; // manage all items
+
+// used to random start position
+vector<AIController*> controllers;
+vector<Vector2u> g_start_positions;
+
+bool is_pause_down = false;
+bool is_pause = false;
+
+bool is_speed_up_down = false;
+bool is_speed_down_down = false;
+float speedScalers[] = { 0.5f, 1.0f, 2.0f};
+int speedlevelNum = 3;
+int currentScalerIndex = 1;
+
+#pragma region Initialization
+
+Vector2u GetARandomStartPositionIndex() {
+    if (g_start_positions.size() == 0)
+        return Vector2u(0, 0);
+    else {
+        int n = rand() % g_start_positions.size();
+        Vector2u v = g_start_positions[n];
+        g_start_positions.erase(g_start_positions.begin() + n);
+        return v;
+    }
 }
 
-// Function to draw the maze
-void drawMaze(sf::RenderWindow& window) {
-	for (size_t i = 0; i < ROWS; i++)
-	{
-		for (size_t j = 0; j < COLS; j++)
-		{
-			RectangleShape rectangle(Vector2f(BLOCK_SIZE, BLOCK_SIZE)); // Size of rectangle
+void InitTank(sf::RenderWindow& window) {
+    for (int i = 0; i < 30; i++) {
+        controllers.push_back(new MyController());
+    }
 
-			Color color = Color::White;
+    for (int i = 0; i < controllers.size(); i++) {
+        Vector2f position = g_map_ptr->GetCenterPositionByIndex(GetARandomStartPositionIndex());
 
-			switch (maze[i][j])
-			{
-				case '#':
-					color = Color::Black;
+        Tank* tank_ptr = new Tank(Color::White, position, i + 1, "Player" + to_string(i + 1));
 
-					drawRect(color, window, rectangle, i, j);
-
-					break;
-
-				case ' ':
-					color = Color::White;
-
-					drawRect(color, window, rectangle, i, j);
-
-					break;
-
-				case 'E':
-					color = Color::Blue;
-
-					drawRect(color, window, rectangle, i, j);
-
-					break;
-
-				case 'X':
-					color = Color::Red;
-
-					drawRect(color, window, rectangle, i, j);
-
-					break;
-
-				case 'P':
-
-					drawRect(color, window, rectangle, i, j);
-
-					color = Color::Green;
-
-					RectangleShape square(Vector2f(10,20));
-					square.setFillColor(color);
-					square.setPosition(j * BLOCK_SIZE + (BLOCK_SIZE / 2) - 5, i * BLOCK_SIZE + 30);
-					window.draw(square);
-
-					color = Color::Yellow;
-
-					int radius = 10;
-
-					CircleShape circle(radius);
-					circle.setFillColor(color);
-					circle.setPosition(j * BLOCK_SIZE + (BLOCK_SIZE / 2) - radius, i * BLOCK_SIZE + (BLOCK_SIZE / 2) - radius);
-					window.draw(circle);
-
-					break;
-			}
-		}
-	}
+        controllers[i]->SetTank(tank_ptr);
+        controllers[i]->Start();
+        g_tank_array.push_back(tank_ptr);
+    } 
 }
 
-// Updated movePlayer function with SFML logic here
-bool movePlayer(char input) {
-	int newX = 0;
-	int newY = 0;
+void InitMap(sf::RenderWindow& window) {
+    // create and load the game map
+    g_map_ptr = new TankMap("Maps/level1.txt");
 
-	switch (input) {
-	case 'w':
+    g_item_manager = new UpgradeItemManager();
 
-		newX = playerX - 1;
-		newY = playerY;
-		break;
-
-	case 'a':
-
-		newX = playerX;
-		newY = playerY - 1;
-		break;
-
-	case 's':
-
-		newX = playerX + 1;
-		newY = playerY;
-		break;
-
-	case 'd':
-
-		newX = playerX;
-		newY = playerY + 1;
-		break;
-	}
-
-	// 2. Check if the new position is within the bounds of the maze and not blocked by a wall ('#').
-	//    - If the move is invalid (out of bounds or into a wall), do not update the player's position.
-
-	if (newX < 0 || newY < 0 || newX >= ROWS || newY >= COLS || maze[newX][newY] == '#') return false;
-
-	// 3. Update the player's position on the maze map:
-	//    - Clear the current position of the player by setting it to ' ' (space).
-	//    - Mark the new position with 'P' to represent the player.
-
-	char v = maze[newX][newY];
-
-	maze[playerX][playerY] = ' ';
-	maze[newX][newY] = 'P';
-
-	playerX = newX;
-	playerY = newY;
-
-	// 4. Check the new position for an enemy ('X') or the exit ('E'):
-	//    - If the player reaches the enemy ('X'), display a message indicating the game is over due to encountering an enemy and set `isGameOver` to true.
-	//    - If the player reaches the exit ('E'), display a congratulatory message indicating the player has escaped the maze and set `isGameOver` to true.
-	// Note: The game's main loop checks the `isGameOver` flag to determine if the game should end.
-
-	if (v == 'X') {
-		printf("You've run into an enemy! GAME OVER\n");
-		isGameOver = true;
-	}
-	else if (v == 'E') {
-		printf("You've escaped! GAME WON\n");
-		isGameOver = true;
-	}
-
-
-	return true;
-	// End your implementation above this comment  
+    for (int i = 0; i < g_map_ptr->GetMapSize().x; i++) {
+        for (int j = 0; j < g_map_ptr->GetMapSize().y; j++) {
+            if (g_map_ptr->GetTerrainByIndex(i, j).name == "dirt3") {
+                g_start_positions.push_back(Vector2u(i, j));
+            }
+        }
+    }
+}
+void InitClock(sf::RenderWindow& window) {
+    // let the clock start to clocking the time 
+    g_deltaClock.restart();
+    g_preTime = g_deltaClock.getElapsedTime(); // set the default value of previous time
 }
 
-int main() {
-	sf::RenderWindow window(sf::VideoMode(COLS * BLOCK_SIZE, ROWS * BLOCK_SIZE), "Maze Game");
-	window.setFramerateLimit(60);
+void InitView(RenderWindow& window) {
+    g_viewManager = new ViewManager(window, g_map_ptr, g_tank_array);
+}
 
-	while (window.isOpen()) {
-		sf::Event event;
-		while (window.pollEvent(event)) {
-			if (event.type == sf::Event::Closed)
-				window.close();
+// initialization
+void Init(sf::RenderWindow& window) {
+    string str = "IGM209-03";
 
-			if (event.type == sf::Event::KeyPressed && !isGameOver) {
-				// Handle player movement
-				if (event.key.code == sf::Keyboard::W) movePlayer('w');
-				else if (event.key.code == sf::Keyboard::S) movePlayer('s');
-				else if (event.key.code == sf::Keyboard::A) movePlayer('a');
-				else if (event.key.code == sf::Keyboard::D) movePlayer('d');
-			}
-		}
+    ifstream inf;
+    inf.open("Assets/seed.txt"); // open the file
+    inf >> str;
+    inf.close();    // close the file
 
-		window.clear();
-		drawMaze(window);
-		window.display();
+    int seed = 0;
+    for (int i = 0; i < str.size(); i++)
+        seed += (int) str[i];
+    srand(seed); // set a seed
+    InitMap(window);
+    InitTank(window);
+    InitView(window);
+    InitClock(window);
 
-		if (isGameOver) {
-			// Handle game over state
-			// For simplicity, we'll just close the window
-			window.close();
-		}
-	}
+    g_bullet_manager = new BulletManager();
+}
+#pragma endregion
 
-	system("pause");
+#pragma region Update
+float UpdateDeltaTime() {
+    Time currentTime = g_deltaClock.getElapsedTime();   // get the current time
+    Time deltaTime = currentTime - g_preTime;           // calculate the delta time
+    float deltaSeconds = deltaTime.asSeconds();         // time to seconds
+    g_preTime = currentTime;                            // the current time become the preTime for next frame
 
-	return 0;
+    return deltaSeconds * speedScalers[currentScalerIndex];
+}
+// update game logic
+void Update(sf::RenderWindow& window) {
+    float deltaSeconds = UpdateDeltaTime();
+
+    if (is_pause == false) {
+
+        for (int i = 0; i < g_tank_array.size(); i++) {
+            ((AIController*)g_tank_array[i]->GetController())->UpdateAllInformation(g_tank_array, g_item_manager->item_array, g_bullet_manager->bullet_array);
+            g_tank_array[i]->Update(window, deltaSeconds);
+        }
+
+        g_bullet_manager->Update(window, deltaSeconds);
+
+        g_map_ptr->Update(window, deltaSeconds);
+        g_item_manager->Update(window, deltaSeconds);
+
+
+
+        // check bullet
+        for (int i = 0; i < g_bullet_manager->bullet_array.size(); i++) {
+            Bullet* bullet = g_bullet_manager->bullet_array[i];
+
+            for (int j = 0; j < g_tank_array.size(); j++) {
+                g_tank_array[j]->CheckGetHit(bullet);
+            }
+        }
+
+        // eat item
+        for (int i = 0; i < g_item_manager->item_array.size(); i++) {
+            UpgradeItem* item = g_item_manager->item_array[i];
+
+            for (int j = 0; j < g_tank_array.size(); j++) {
+                g_tank_array[j]->CheckEatItem(item);
+            }
+        }
+    }
+    g_viewManager->Update(window, deltaSeconds);
+
+    if (is_pause_down == false && Keyboard::isKeyPressed(Keyboard::P)) {
+        is_pause = !is_pause;
+    }
+
+    is_pause_down = Keyboard::isKeyPressed(Keyboard::P);
+
+
+    if (is_speed_up_down == false && Keyboard::isKeyPressed(Keyboard::RBracket)) {
+        currentScalerIndex = (currentScalerIndex + 1);
+        if (currentScalerIndex >= speedlevelNum)
+            currentScalerIndex = currentScalerIndex - 1;
+    }
+    is_speed_up_down = Keyboard::isKeyPressed(Keyboard::RBracket);
+
+    if (is_speed_down_down == false && Keyboard::isKeyPressed(Keyboard::LBracket)) {
+        currentScalerIndex = (currentScalerIndex - 1);
+        if (currentScalerIndex < 0)
+            currentScalerIndex = 0;
+    }
+    is_speed_down_down = Keyboard::isKeyPressed(Keyboard::LBracket);
+}
+#pragma endregion
+
+// render the game scene
+void Render(sf::RenderWindow& window) {
+    g_map_ptr->Render(window);      // draw the map
+
+    // draw tanks
+    for (int i = 0; i < g_tank_array.size(); i++)
+        g_tank_array[i]->Render(window);
+
+    g_item_manager->Render(window);
+    g_bullet_manager->Render(window);
+
+    g_viewManager->Render(window); // last
+}
+
+int main()
+{
+    sf::RenderWindow window(sf::VideoMode(960, 960), "IGME 209 - Tank Campionship"); // create a window
+    window.setFramerateLimit(60);
+
+    Init(window); // initialization
+
+    // game loop
+    while (window.isOpen())
+    {
+        sf::Event event;
+        while (window.pollEvent(event))
+        {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear(sf::Color(0, 0, 0)); // clear the window with color(0,0,0)
+
+        Update(window); // update game logic
+        Render(window); // draw the game scene
+
+        window.display(); // display the window
+    }
+
+    return 0;
 }
